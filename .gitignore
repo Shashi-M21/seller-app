@@ -63,6 +63,7 @@ typings/
 
 #ignore dev config on IDE
 .idea
+pgdata
 
 workspace.xml
 

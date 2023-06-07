@@ -322,72 +322,134 @@ class UserService {
      * @param {Object} currentUser Current user is fetched from JWT token which is used to make a request
      * @param {Object} permission Current users permission
      */
+    // async list(organizationId, queryData) {
+    //     try {
+    //         //building query            
+    //         let query = {};
+    //         // query.organizationId = organizationId;
+    //         // if(queryData.role){
+    //         //     query.role = 'Super Admin';
+    //         // }
+    //         //{path: 'path',select : ['fields'],match:query}
+    //         //const users = await User.find(query,{password:0}).populate({path: 'role',match: {name:queryData.role}}).sort({createdAt:1}).skip(queryData.offset).limit(queryData.limit);
+
+    //         let userQuery = {role: {$ne: []}};
+    //         let roleQuery = {name: queryData.role};
+    //         const users = await User.aggregate([
+    //             {
+    //                 '$lookup': {
+    //                     'from': 'roles',
+    //                     'localField': 'role',
+    //                     'foreignField': '_id',
+    //                     'as': 'role',
+    //                     'pipeline': [{'$match': roleQuery}]
+    //                 },
+    //             }, {
+    //                 '$match': userQuery,
+    //             }, {'$project': {'password': 0}}
+    //         ]).sort({createdAt: 1}).skip(queryData.offset * queryData.limit).limit(queryData.limit);
+
+    //         const usersCount = await User.aggregate([
+    //             {
+    //                 '$lookup': {
+    //                     'from': 'roles',
+    //                     'localField': 'role',
+    //                     'foreignField': '_id',
+    //                     'as': 'role',
+    //                     'pipeline': [{'$match': roleQuery}]
+    //                 }
+    //             }, {
+    //                 '$match': userQuery,
+    //             },
+    //         ]).count('count');
+
+    //         for (const user of users) { //attach org details
+
+    //             let organization = await Organization.findOne({_id: user.organization}, {_id: 1, name: 1});
+    //             user.organization = organization;
+
+    //             let bannedUser = await BannedUser.findOne({user:user._id});
+    //             user.bannedUser = bannedUser;
+
+    //         }
+    //         let count;
+    //         if (usersCount && usersCount.length > 0) {
+    //             count = usersCount[0].count;
+    //         } else {
+    //             count = 0;
+    //         }
+
+    //         //const count = await User.count(query);
+
+    //         return {count: count, data: users};
+
+    //     } catch (err) {
+    //         throw err;
+    //     }
+    // }
+
     async list(organizationId, queryData) {
         try {
-            //building query            
-            let query = {};
-            // query.organizationId = organizationId;
-            // if(queryData.role){
-            //     query.role = 'Super Admin';
-            // }
-            //{path: 'path',select : ['fields'],match:query}
-            //const users = await User.find(query,{password:0}).populate({path: 'role',match: {name:queryData.role}}).sort({createdAt:1}).skip(queryData.offset).limit(queryData.limit);
-
-            let userQuery = {role: {$ne: []}};
-            let roleQuery = {name: queryData.role};
-            const users = await User.aggregate([
-                {
-                    '$lookup': {
-                        'from': 'roles',
-                        'localField': 'role',
-                        'foreignField': '_id',
-                        'as': 'role',
-                        'pipeline': [{'$match': roleQuery}]
-                    },
-                }, {
-                    '$match': userQuery,
-                }, {'$project': {'password': 0}}
-            ]).sort({createdAt: 1}).skip(queryData.offset * queryData.limit).limit(queryData.limit);
-
-            const usersCount = await User.aggregate([
-                {
-                    '$lookup': {
-                        'from': 'roles',
-                        'localField': 'role',
-                        'foreignField': '_id',
-                        'as': 'role',
-                        'pipeline': [{'$match': roleQuery}]
-                    }
-                }, {
-                    '$match': userQuery,
-                },
-            ]).count('count');
-
-            for (const user of users) { //attach org details
-
-                let organization = await Organization.findOne({_id: user.organization}, {_id: 1, name: 1});
-                user.organization = organization;
-
-                let bannedUser = await BannedUser.findOne({user:user._id});
-                user.bannedUser = bannedUser;
-
-            }
-            let count;
-            if (usersCount && usersCount.length > 0) {
-                count = usersCount[0].count;
-            } else {
-                count = 0;
-            }
-
-            //const count = await User.count(query);
-
-            return {count: count, data: users};
-
+          let userQuery = { role: { $ne: [] } };
+          let roleQuery = { name: queryData.role };
+      
+          const users = await User.aggregate([
+            {
+              $lookup: {
+                from: "roles",
+                localField: "role",
+                foreignField: "_id",
+                as: "role",
+                pipeline: [{ $match: roleQuery }],
+              },
+            },
+            {
+              $match: userQuery,
+            },
+            {
+              $project: {
+                email: 1,
+                name: 1,
+                mobile:1,
+                enabled:1
+              },
+            },
+          ])
+            .sort({ createdAt: 1 })
+            .limit(parseInt(queryData.limit))
+            .skip(parseInt(queryData.offset));
+      
+          const usersCount = await User.aggregate([
+            {
+              $lookup: {
+                from: "roles",
+                localField: "role",
+                foreignField: "_id",
+                as: "role",
+                pipeline: [{ $match: roleQuery }],
+              },
+            },
+            {
+              $match: userQuery,
+            },
+            {
+              $count: "count",
+            },
+          ]);
+      
+          let count;
+          if (usersCount && usersCount.length > 0) {
+            count = usersCount[0].count;
+          } else {
+            count = 0;
+          }
+      
+          return { count: count, data: users };
         } catch (err) {
-            throw err;
+          throw err;
         }
-    }
-
+      }
+      
     async uploads(identity) {
         if (identity) {
             try {

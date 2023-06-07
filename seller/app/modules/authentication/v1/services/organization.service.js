@@ -76,24 +76,52 @@ class OrganizationService {
         }
     }
 
-    async list(params) {
+    // async list(params) {
+    //     try {
+    //         let query={};
+    //         if(params.name){
+    //             query.name = { $regex: params.name, $options: 'i' };
+    //         }
+    //         const organizations = await Organization.find(query).sort({createdAt:1}).skip(params.offset).limit(params.limit);
+    //         const count = await Organization.count(query);
+    //         let organizationData={
+    //             count,
+    //             organizations
+    //         };
+    //         return organizationData;
+    //     } catch (err) {
+    //         console.log('[OrderService] [getAll] Error in getting all organization ',err);
+    //         throw err;
+    //     }
+    // }
+
+    async list(organizationId, offset, limit) {
         try {
-            let query={};
-            if(params.name){
-                query.name = { $regex: params.name, $options: 'i' };
-            }
-            const organizations = await Organization.find(query).sort({createdAt:1}).skip(params.offset).limit(params.limit);
-            const count = await Organization.count(query);
-            let organizationData={
-                count,
-                organizations
-            };
-            return organizationData;
+          const query = {};
+          // Uncomment the following lines if you want to search by organization name
+          // if (params.name) {
+          //     query.name = { $regex: params.name, $options: 'i' };
+          // }
+      
+          const count = await Organization.countDocuments(query);
+          const organizations = await Organization.find(query)
+          .select('address name contactEmail contactMobile FSSAI')
+            .sort({ createdAt: 1 })
+            .skip(offset)
+            .limit(limit);
+      
+          const organizationData = {
+            count,
+            organizations,
+          };
+      
+          return organizationData;
         } catch (err) {
-            console.log('[OrderService] [getAll] Error in getting all organization ',err);
-            throw err;
+          console.log("[ProductService] [list] Error in getting all organizations", err);
+          throw err;
         }
-    }
+      }
+
 
     async get(organizationId) {
         try {
