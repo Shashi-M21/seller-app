@@ -10,10 +10,6 @@ import Organization from '../../models/organization.model';
 import {JsonWebToken, Token} from '../../../../lib/authentication';
 // import {Nes} from '../isc';
 import { mergedEnvironmentConfig } from '../../../../config/env.config.js';
-import UserService from './user.service';
-
-
-const userService = new UserService();
 class AuthenticationService {
     async login(currentUser, data) {
         try {
@@ -21,12 +17,9 @@ class AuthenticationService {
             //find user with email
             data.email = data.email.toLowerCase();
 
-            let currentUser = await User.findOne({email:data.email}).populate([{path:'role'},{path:'organization',select:['name','_id','storeDetails']}]).lean();
+            let currentUser = await User.findOne({email:data.email},{enabled:0}).populate([{path:'role'},{path:'organization',select:['name','_id','storeDetails']}]).lean();
             if (!currentUser) {
                 throw new UnauthenticatedError(MESSAGES.INVALID_PIN);
-            }
-            if(!currentUser.enabled){
-                throw new UnauthenticatedError(MESSAGES.LOGIN_ERROR_USER_ACCOUNT_DEACTIVATED);
             }
 
             let PIN = '';
@@ -35,33 +28,9 @@ class AuthenticationService {
             currentPIN = currentUser.password;
             // verify current PIN
             const isValid = await isValidPIN('' + PIN, currentPIN);
-            // if (!isValid) {
-            //     throw new UnauthenticatedError(MESSAGES.INVALID_PIN);
-            // }
-
             if (!isValid) {
-                //create login attempt and validate is user is banned
-                let bannedUser =  await userService.logUserLoginAttempt({userId:currentUser._id,ip:'',success:false});
-
-                if(bannedUser){
-                    throw new UnauthenticatedError(MESSAGES.LOGIN_ERROR_USER_ACCOUNT_BANNED);
-                }else{
-                    throw new UnauthenticatedError(MESSAGES.INVALID_PIN);
-                }
-
-            }else{
-                //create login attempt and validate is user is banned
-                let bannedUser =  await userService.logUserLoginAttempt({userId:currentUser._id,ip:'',success:true});
-
-                console.log('banned user------------>',bannedUser);
-
-                if(bannedUser){
-                    console.log('banned user--------insid---->',bannedUser);
-
-                    throw new UnauthenticatedError(MESSAGES.LOGIN_ERROR_USER_ACCOUNT_BANNED);
-                }
+                throw new UnauthenticatedError(MESSAGES.INVALID_PIN);
             }
-
             // JWT token payload object
             const tokenPayload = {
                 user: {
@@ -77,17 +46,13 @@ class AuthenticationService {
 
             if(currentUser.organization ){
                 if(currentUser.organization?.storeDetails?.supportDetails){
-                    currentUser.organization.storeDetailsAvailable = true;
+                    currentUser.organization.storeDetailsAvailable = true
                 }else{
-                    currentUser.organization.storeDetailsAvailable = false;
+                    currentUser.organization.storeDetailsAvailable = false
                 }
-                delete currentUser.organization.storeDetails;
+               delete currentUser.organization.storeDetails
             }
 
-
-            myCache.set( `${currentUser._id}-${JWTToken}`, {userId:currentUser._id,token:JWTToken} );
-
-            console.log(myCache.get(`${currentUser._id}-${JWTToken}`));
             return { user: currentUser, token: JWTToken };
         } catch (err) {
             throw err;
@@ -106,11 +71,11 @@ class AuthenticationService {
 
             // generate six digit random number
             if (!data.password)
-                data.password = Math.floor(100000 + Math.random() * 900000);
+                // data.password = Math.floor(100000 + Math.random() * 900000);
+                data.password = 'shashi@123'
+            const password = data.password;
 
-            const password = data.password; //FIXME: reset to default random password once SES is activated
-
-            data.password = await encryptPIN('' + password);
+            data.password = await encryptPIN('' + data.password);
 
             user.password = data.password;
             user.isSystemGeneratedPassword = true;
@@ -120,9 +85,9 @@ class AuthenticationService {
             //TODO: Send email with OTP
 
 
-            let mailData = { password: password, user: user };
+             let mailData = { password: password, user: user };
 
-            console.log('maildata---->',mailData);
+             console.log("maildata---->",mailData)
             //
             ServiceApi.sendEmail(
                 {

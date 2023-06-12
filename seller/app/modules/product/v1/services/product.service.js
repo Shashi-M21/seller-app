@@ -48,6 +48,7 @@ class ProductService {
     async search(params) {
         try {
             let query={};
+            console.log(query);
 
             console.log('params------->',params);
             const orgs = await Organization.find({},).lean();
@@ -62,7 +63,9 @@ class ProductService {
                     query.productCategory ={ $regex: '.*' + params.category + '.*' };
                 }
                 // query.productName = {$regex: params.message.intent.item.descriptor.name,$options: 'i'}
+                console.log(query);
                 const data = await Product.find(query).sort({createdAt:1}).skip(params.offset).limit(params.limit);
+                console.log(data +'hey from search');
                 if(data.length>0){
                     for(const product of data){
                         let productDetails = product;
@@ -78,12 +81,16 @@ class ProductService {
                 }
             }
             //collect all store details by
+            console.log(products);
             return products;
         } catch (err) {
             console.log('[OrderService] [getAll] Error in getting all from organization ',err);
             throw err;
         }
     }
+
+
+      
 
     async get(productId) {
         try {

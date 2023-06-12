@@ -14,14 +14,14 @@ class OrderService {
             let query = {};
 
             console.log('data----->',data);
-            console.log('data---items-->',data.data.items);
+            console.log('data---items-->',data.items);
             // const organizationExist = await Product.findOne({productName:data.productName});
             // if (organizationExist) {
             //     throw new DuplicateRecordFoundError(MESSAGES.PRODUCT_ALREADY_EXISTS);
             // }
-            //update item qty in product inventory
+            // update item qty in product inventory
 
-            for(let item of data.data.items){
+            for(let item of data.items){
                 if(item.quantity.count){
                     //reduce item quantity
                     let product = await Product.findOne({_id:item.id});
@@ -32,7 +32,7 @@ class OrderService {
                     await product.save();
                 }
             }
-            data.data.organization=data.data.provider.id;
+            data.organization=data.provider;
             let order = new Order(data.data);
             let savedOrder= await order.save();
 

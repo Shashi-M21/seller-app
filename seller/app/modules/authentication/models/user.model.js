@@ -47,4 +47,3 @@ userSchema.index({mobile:1,email:1}, {unique: true});
 
 const User = mongoose.model('User',userSchema);
 module.exports = User;
-

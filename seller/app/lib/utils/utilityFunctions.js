@@ -5,6 +5,10 @@ async function asyncForEach(array, callback) {
     }
 }
 
+
+// $2a$10$rQ.GzCnS0N7gYeMbTPyFWeqxCHvRbFM8238hE1zOWa9d9Q/d.WRqa
+// $2a$10$rQ.GzCnS0N7gYeMbTPyFWeqxCHvRbFM8238hE1zOWa9d9Q/d.WRqa
+
 exports.asyncForEach = asyncForEach;
 
 exports.encryptPIN = (PIN) => {
@@ -13,6 +17,7 @@ exports.encryptPIN = (PIN) => {
             if (err) reject(err);
             else {
                 resolve(hash);
+               
             }
         });
     });
