@@ -1,0 +1,62 @@
+version: '3'
+
+volumes:
+  postgres_data: {}
+
+services:
+  strapi:
+    build:
+      context: .
+      dockerfile: strapiDocker
+    environment:
+      DATABASE_CLIENT: postgres
+      DATABASE_NAME: sellerApp
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_USERNAME: strapi
+      DATABASE_PASSWORD: strapi
+      DATABASE_SCHEMA: public
+    ports:
+      - '1337:1337'
+    depends_on:
+      - postgres
+    networks:
+      - ondc-net
+
+  # seller:
+  #   build:
+  #     context: .
+  #     dockerfile: sellerApiDocker
+  #   environment:
+  #     FIREBASE_SERVICE_ACCOUNT_JSON_PATH: lib/config/firebase-service-account.json
+  #     STRAPI_SERVER_URL: http://strapi:1337
+  #     DATABASE_NAME_SELLER_CLIENT: seller_client
+  #     DATABASE_HOST: postgres
+  #     DATABASE_PORT: 5432
+  #     DATABASE_USERNAME: bpp_client
+  #     DATABASE_PASSWORD: bpp_client
+  #     NODE_ENV: development
+  #     STRAPI_API_TOKEN: 125a4f53f8ebb999e10f97d7132ff10b587dd0a380001568c3a388691fe73b55f9cfa85709a428103514e2405f098f84dbddf9d2e7a13027d78ae8d04b2754f1f61457dc30a2bb4de7a68a39177e976345979086c66947b2070e3e46bb14acaa91952bc1e30ebfed822f2d91ae4a09deea63673aff8e0de9e3ba6119bb36d7e9
+  #   ports:
+  #     - '3001:3001'
+  #   depends_on:
+  #     - strapi
+  #   networks:
+  #     - ondc-net
+ 
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_DB: sellerApp
+      POSTGRES_USER: strapi
+      POSTGRES_PASSWORD: strapi
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - ondc-net
+
+networks:
+  ondc-net:
+    driver: bridge
