@@ -1,10 +1,13 @@
 import path from 'path';
 import EmailTemplate from 'email-templates';
 import nodemailer from 'nodemailer';
-import config from '../config';
-import emails from './emails';
-import {EMAIL_TEMPLATES} from '../../utils/constants';
+import config from '../config/index.js';
+import emails from './emails/index.js';
+import {EMAIL_TEMPLATES} from '../../utils/constants.js';
 
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 class Mailer {
 
     constructor(sender) {

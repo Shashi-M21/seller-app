@@ -90,8 +90,6 @@ class ProductService {
     }
 
 
-      
-
     async get(productId) {
         try {
             let doc = await Product.findOne({_id:productId}).lean();

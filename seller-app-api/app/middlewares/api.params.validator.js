@@ -1,4 +1,4 @@
-import {BadRequestParameterError} from '../lib/errors';
+import BadRequestParameterError from '../lib/errors/bad-request-parameter.error.js';
 
 exports.middleware = (options) => async (req, res, next) => {
     try {
@@ -27,3 +27,5 @@ exports.middleware = (options) => async (req, res, next) => {
     }
     ;
 };
+
+export default apiParamsValidator

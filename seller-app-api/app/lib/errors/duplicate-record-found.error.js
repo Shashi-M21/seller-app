@@ -1,4 +1,5 @@
-import ERRORS from './errors';
+import ERRORS from './errors.js';
+
 
 class DuplicateRecordFoundError extends Error {
     constructor(message = ERRORS.DUPLICATE_RECORD_FOUND_ERROR.message, params) {

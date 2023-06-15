@@ -1,10 +1,10 @@
-import UnauthenticatedError from './unauthenticated.error';
-import UnauthorisedError from './unauthorised.error';
-import NoRecordFoundError from './no-record-found.error';
-import DuplicateRecordFoundError from './duplicate-record-found.error';
-import BadRequestParameterError from './bad-request-parameter.error';
-import ConflictError from './conflict.error';
-import PreconditionRequiredError from './precondition-required.error';
+import UnauthenticatedError from './unauthenticated.error.js';
+import UnauthorisedError from './unauthorised.error.js';
+import NoRecordFoundError from './no-record-found.error.js';
+import DuplicateRecordFoundError from './duplicate-record-found.error.js';
+import BadRequestParameterError from './bad-request-parameter.error.js';
+import ConflictError from './conflict.error.js';
+import PreconditionRequiredError from './precondition-required.error.js';
 
 exports.UnauthenticatedError = UnauthenticatedError;
 exports.UnauthorisedError = UnauthorisedError;

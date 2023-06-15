@@ -1,4 +1,5 @@
-import ERRORS from './errors';
+import ERRORS from './errors.js';
+
 
 class BadRequestParameterError extends Error {
     constructor(message = ERRORS.BAD_REQUEST_PARAMETER_ERROR.message, params) {

@@ -1,4 +1,5 @@
-import ERRORS from './errors';
+import ERRORS from './errors.js';
+
 
 class NoRecordFoundError extends Error {
     constructor(message = ERRORS.NO_RECORD_FOUND_ERROR.message, params) {

@@ -1,110 +1,127 @@
-import OndcService from "../services/ondc.service.js";
 
-const ondcService = new OndcService();
+import LogisticsService from '../services/logistics.service.js';
 
-class OndcController {
+const logisticsService = new LogisticsService();
+
+class LogisticsController {
 
 
     productSearch(req, res, next) {
         // const currentUserAccessToken = res.get('currentUserAccessToken');
-        ondcService.productSearch(req.body,req).then(data => {
+        logisticsService.productSearch(req.body,req).then(data => {
             res.json(data);
         }).catch((err) => {
             next(err);
         });
     }
 
-    orderSelect(req, res, next) {
+    productSelect(req, res, next) {
         // const currentUserAccessToken = res.get('currentUserAccessToken');
-        ondcService.orderSelect(req.body,req).then(data => {
+        logisticsService.productSelect(req.body,req).then(data => {
             res.json(data);
         }).catch((err) => {
             next(err);
         });
     }
-    orderInit(req, res, next) {
+    productInit(req, res, next) {
         // const currentUserAccessToken = res.get('currentUserAccessToken');
-        ondcService.orderInit(req.body,req).then(data => {
+        logisticsService.productInit(req.body,req).then(data => {
             res.json(data);
         }).catch((err) => {
             next(err);
         });
     }
-    orderConfirm(req, res, next) {
+    productConfirm(req, res, next) {
         // const currentUserAccessToken = res.get('currentUserAccessToken');
-        ondcService.orderConfirm(req.body,req).then(data => {
+        logisticsService.productConfirm(req.body,req).then(data => {
             res.json(data);
         }).catch((err) => {
             next(err);
         });
     }
-    orderTrack(req, res, next) {
+    productTrack(req, res, next) {
         // const currentUserAccessToken = res.get('currentUserAccessToken');
-        ondcService.orderTrack(req.body,req).then(data => {
+        logisticsService.productTrack(req.body,req).then(data => {
             res.json(data);
         }).catch((err) => {
             next(err);
         });
     }
-    orderCancel(req, res, next) {
+    productCancel(req, res, next) {
         // const currentUserAccessToken = res.get('currentUserAccessToken');
-        ondcService.orderCancel(req.body,req).then(data => {
+        logisticsService.productCancel(req.body,req).then(data => {
             res.json(data);
         }).catch((err) => {
             next(err);
         });
     }
-    orderStatus(req, res, next) {
+    productStatus(req, res, next) {
         // const currentUserAccessToken = res.get('currentUserAccessToken');
-        ondcService.orderStatus(req.body,req).then(data => {
+        logisticsService.productStatus(req.body,req).then(data => {
             res.json(data);
         }).catch((err) => {
             next(err);
         });
     }
-
-    orderStatusUpdate(req, res, next) {
+    productSupport(req, res, next) {
         // const currentUserAccessToken = res.get('currentUserAccessToken');
-        ondcService.orderStatusUpdate(req.body,req).then(data => {
-            res.json(data);
-        }).catch((err) => {
-            next(err);
-        });
-    }
-
-    orderStatusUpdateItems(req, res, next) {
-        // const currentUserAccessToken = res.get('currentUserAccessToken');
-        ondcService.orderStatusUpdateItems(req.body,req).then(data => {
-            res.json(data);
-        }).catch((err) => {
-            next(err);
-        });
-    }
-    orderCancelFromSeller(req, res, next) {
-        // const currentUserAccessToken = res.get('currentUserAccessToken');
-        ondcService.orderCancelFromSeller(req.body,req).then(data => {
-            res.json(data);
-        }).catch((err) => {
-            next(err);
-        });
-    }
-    orderUpdate(req, res, next) {
-        // const currentUserAccessToken = res.get('currentUserAccessToken');
-        ondcService.orderUpdate(req.body,req).then(data => {
-            res.json(data);
-        }).catch((err) => {
-            next(err);
-        });
-    }
-    orderSupport(req, res, next) {
-        // const currentUserAccessToken = res.get('currentUserAccessToken');
-        ondcService.orderSupport(req.body,req).then(data => {
+        logisticsService.productSupport(req.body,req).then(data => {
             res.json(data);
         }).catch((err) => {
             next(err);
         });
     }
 
+    init(req, res, next) {
+        // const currentUserAccessToken = res.get('currentUserAccessToken');
+        logisticsService.init(req.body,req).then(data => {
+            res.json(data);
+        }).catch((err) => {
+            next(err);
+        });
+    }
+
+    confirm(req, res, next) {
+        // const currentUserAccessToken = res.get('currentUserAccessToken');
+        logisticsService.confirm(req.body,req).then(data => {
+            res.json(data);
+        }).catch((err) => {
+            next(err);
+        });
+    }
+    track(req, res, next) {
+        // const currentUserAccessToken = res.get('currentUserAccessToken');
+        logisticsService.track(req.body,req).then(data => {
+            res.json(data);
+        }).catch((err) => {
+            next(err);
+        });
+    }
+    support(req, res, next) {
+        // const currentUserAccessToken = res.get('currentUserAccessToken');
+        logisticsService.support(req.body,req).then(data => {
+            res.json(data);
+        }).catch((err) => {
+            next(err);
+        });
+    }
+    status(req, res, next) {
+        // const currentUserAccessToken = res.get('currentUserAccessToken');
+        logisticsService.status(req.body,req).then(data => {
+            res.json(data);
+        }).catch((err) => {
+            next(err);
+        });
+    }
+    cancel(req, res, next) {
+        // const currentUserAccessToken = res.get('currentUserAccessToken');
+        logisticsService.cancel(req.body,req).then(data => {
+            res.json(data);
+        }).catch((err) => {
+            next(err);
+        });
+    }
 
 }
-export default OndcController;
+
+export default LogisticsController;

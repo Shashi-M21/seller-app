@@ -20,16 +20,16 @@
     }
   },
   "database": {
-    "username": "akshay",
-    "password": "",
-    "name": "sellerapp",
-    "host": "localhost",
+    "username": "strapi",
+    "password": "strapi",
+    "name": "sellerApp",
+    "host": "postgres",
     "port": "5432",
     "dialect": "postgres",
     "pool": {
       "max": 60,
       "min": 0,
-      "acquire": 1000000,
+      "acquire": 30000,
       "idle": 10000,
       "evict": 10000
     }
@@ -37,7 +37,7 @@
   "email": {
     "transport": {
       "SMTP": {
-        "host": "",
+        "host": "email-smtp.us-east-1.amazonaws.com",
         "port": 587,
         "secure": false,
         "auth": {
@@ -51,15 +51,18 @@
         "path": "/usr/sbin/sendmail"
       }
     },
-    "sender": "",
-    "supportEmail": "",
+    "sender": "dev@wemotiveforge.com",
+    "supportEmail": "dev@wemotiveforge.com",
     "webClientUri": "http://34.123.120.224",
     "shareUrl": "https://www.google.com"
   },
   "cors": {
     "whitelistUrls": [
+      "*",
       "http://localhost:3000",
-      "https://localhost:3000"
+      "https://localhost:3000",
+      "http://localhost:3019",
+      "https://localhost:3019"
     ]
   },
   "directory": {
@@ -72,19 +75,22 @@
   },
   "general": {
     "exceptionEmailRecipientList": [
+      "akshay@wemotiveforge.com"
     ]
   },
-  "seller": {
-    "serverUrl": "http://localhost:3019"
+  "strapi": {
+    "serverUrl": "http://localhost:1337",
+    "apiToken": "8e04a7b87f157ae43d1c943b1e14343e13a7aa9d2809565ed52d9704188aeff4ee765bc7163a61c0481f900e8dfef4f064fbf2bb0ba98289f1bec41e03d29de893da2e234baba54c1003a5f0283866d09443aa44538be90780c94286b76e6e0ce9a39d1321818b146fef0f6e70d283135094b5639067024fa594ff8689105404"
   },
   "firebase": {
-    "account": ""
+    "account": "lib/config/firebase-service-account.json"
   },
+
   "sellerConfig": {
     "BPP_ID": "sellerapp-staging.datasyndicate.in",
-    "BPP_URI": "https://6607-2402-e280-3e33-24e-7533-b3a7-881b-4166.in.ngrok.io",
+    "BPP_URI": "https://c0ae-2402-e280-3e33-24e-b1b3-e49b-bea7-49a8.in.ngrok.io",
     "BAP_ID": "sellerapp-staging.datasyndicate.in",
-    "BAP_URI": "https://6607-2402-e280-3e33-24e-7533-b3a7-881b-4166.in.ngrok.io",
+    "BAP_URI": "https://4873-2402-e280-3e33-24e-c954-4862-deda-7817.in.ngrok.io",
     "storeOpenSchedule": {
       "time": {
         "days": "1,2,3,4,5,6,7",

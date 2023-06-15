@@ -1,4 +1,4 @@
-import { UnauthenticatedError } from '../lib/errors/index.js';
+import UnauthenticatedError  from '../lib/errors/unauthenticated.error.js';
 import validateToken from '../lib/firebase/validateToken.js';
 import MESSAGES from '../utils/messages.js';
 

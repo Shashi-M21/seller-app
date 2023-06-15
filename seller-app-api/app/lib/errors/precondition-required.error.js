@@ -1,4 +1,5 @@
-import ERRORS from './errors';
+import ERRORS from './errors.js';
+
 
 class PreconditionRequiredError extends Error {
     constructor(message = ERRORS.PRECONDITION_REQUIRED_ERROR.message, params) {

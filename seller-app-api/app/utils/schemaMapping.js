@@ -1,12 +1,15 @@
-const config = require("../lib/config");
-const logger = require("../lib/logger");
-
+//const config = require("../lib/config/index.js");
+import config from '../lib/config/index.js'
+//const logger = require("../lib/logger");
+import logger from '../lib/logger/index.js'
+// import { stringify, toJSON } from 'flatted'
 const BPP_ID = config.get("sellerConfig").BPP_ID
 const BPP_URI = config.get("sellerConfig").BPP_URI
 
-exports.getProducts = async (data) => {
+export const getProducts = async (data) => {
 
     data.context.timestamp = new Date();
+    // logger.log(' from schemampping------->'+ data.context.timestamp);
     let bppDetails ={}
     let bppProviders =[]
     for(const org of data?.data){
@@ -130,38 +133,23 @@ exports.getProducts = async (data) => {
             "time":
                 {
                     "label":"enable",
-                    "timestamp":data.context.timestamp
+                    "timestamp":"2023-06-06T10:41:34.971Z"
                 },
             "locations": [
                 {
                     "id": org.storeDetails?.location._id??"0", //org.storeDetails.location._id
-                    "gps": `${org.storeDetails?.location?.lat??"0"},${org.storeDetails?.location?.long??"0"}`,
+                    "gps": `${org.storeDetails?.location?.lat??"0"},${org.storeDetails?.location?.long??"0"}`, //TODO: hard coded for now,
                     "address":org.storeDetails.address,
-                    "time":
-                        {
-                            "days":org.storeDetails?.storeTiming?.days?.join(",")??
-                                "1,2,3,4,5,6,7",
-                            "schedule": {
-                                "holidays": org.storeDetails?.storeTiming?.schedule?.holidays?? [],
-                                "frequency": org.storeDetails?.storeTiming?.schedule?.frequency??"",
-                                "times": org.storeDetails?.storeTiming?.schedule?.times?.map((str)=>{
-                                    return str.replace(':','')
-                                })??[]
-                            },
-                            "range": {
-                                "start": org.storeDetails?.storeTiming?.range?.start?.replace(':','')??"0000",
-                                "end": org.storeDetails?.storeTiming?.range?.end?.replace(':','')??"2300"
-                            }
-                    },
-                    "circle":
-                        {
-                            "gps":`${org.storeDetails?.location?.lat??"0"},${org.storeDetails?.location?.long??"0"}`,
-                            "radius":org.storeDetails?.radius??
-                                {
-                                    "unit":"km",
-                                    "value":"3"
-                                }
+                    "time": { //TODO: hard coded for now
+                        "range": {
+                            "start": "0000",
+                            "end": "2359"
+                        },
+                        "days": "1,2,3,4,5,6,7",
+                        "schedule": {
+                            "holidays": []
                         }
+                    }
                 }
             ],
             "ttl": "PT24H",
@@ -213,17 +201,15 @@ exports.getProducts = async (data) => {
         }
     }
 
-
+    // const schemaupdated = toJSON(schema)
+    // console.log('transformed product schema ---->  ' + schema);
 
     return schema
-
-
 
 }
 
 
-
-exports.getSelect = async (data) => {
+export const getSelect = async (data) => {
 
     try{
         logger.log('info', `[Schema mapping ] build retail select request from :`, data);
@@ -283,7 +269,7 @@ exports.getSelect = async (data) => {
 
 }
 
-exports.getInit = async (data) => {
+export const getInit = async (data) => {
 
     let productAvailable = []
     //set product items to schema
@@ -322,7 +308,7 @@ exports.getInit = async (data) => {
 
 }
 
-exports.getStatus = async (data) => {
+export const getStatus = async (data) => {
 
     let productAvailable = []
     //set product items to schema
@@ -368,7 +354,7 @@ exports.getStatus = async (data) => {
 
 }
 
-exports.getUpdate = async (data) => {
+export const getUpdate = async (data) => {
 
     let productAvailable = []
     //set product items to schema
@@ -404,7 +390,7 @@ exports.getUpdate = async (data) => {
 
 }
 
-exports.getCancel = async (data) => {
+export const getCancel = async (data) => {
 
     let productAvailable = []
     //set product items to schema
@@ -435,7 +421,7 @@ exports.getCancel = async (data) => {
 
 }
 
-exports.getTrack = async (data) => {
+export const getTrack = async (data) => {
 
     let productAvailable = []
     //set product items to schema
@@ -455,7 +441,7 @@ exports.getTrack = async (data) => {
     return schema
 
 }
-exports.getSupport = async (data) => {
+export const getSupport = async (data) => {
 
     let productAvailable = []
     //set product items to schema
@@ -472,7 +458,7 @@ exports.getSupport = async (data) => {
     return schema
 
 }
-exports.getConfirm = async (data) => {
+export  const getConfirm = async (data) => {
 
     let productAvailable = []
     //set product items to schema
