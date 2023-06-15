@@ -20,20 +20,27 @@ const getSignedUrlForUpload = (s3,myBucket) => async(data) => {
 
     //TODO: Use Axios to send http request
     try {
-
+       
         let orgId = '';
+       
         if(data.organizationId){
             orgId = data.organizationId;
         }else{
-            orgId = data?.currentUser?.organization??uuidv4();
+            orgId = data?.currentUser?.organization?? data.orguuid;
         }
+        // console.log("data from s3util---->"+ data.orguuid);
+        const fileExtension = (data?.fileType === '.jpeg' || data?.fileType === '.jpg') ? data.fileType : '.jpg';
+        const fileNameWithoutExtension = data?.fileName ? data.fileName.slice(0, data.fileName.lastIndexOf('.')) : '';
+        const myKey = `${orgId}/${data.path}/${fileNameWithoutExtension}${fileExtension}`;
 
 
-        const myKey = orgId+'/'+data.path+'/' + data?.fileName + data?.fileType?.replace(/^\.?/, '.');
+        // const myKey = orgId+'/'+data.path+'/' + data?.fileName + data?.fileType?.replace(/^\.?/, '.');
+        // console.log('mykey------>' + myKey)
         const params = {
             Bucket: myBucket,
             Key: myKey,
-            Expires: signedUrlExpireSeconds
+            Expires: signedUrlExpireSeconds,
+            ContentType: 'multipart/form-data'
         };
 
 
@@ -57,7 +64,6 @@ const getSignedUrlForUpload = (s3,myBucket) => async(data) => {
                 }));
 
     } catch (err) {
-        console.log("err",err)
         return err;
     }
 };
@@ -72,27 +78,19 @@ exports.getSignedUrlForRead = async(data) => {
         const params = {
             Bucket: myBucket,
             Key: myKey,
-            Expires: signedUrlExpireSeconds
+            Expires: signedUrlExpireSeconds,
+            ContentType: 'multipart/form-data'
         };
 
         //const {config :{params,region}} = s3Bucket;
         const regionString = '-' + region;
         myBucket = myBucket.replace('/public-assets','');
 
-        let url = `https://${myBucket}.s3${regionString}.amazonaws.com/public-assets/${myKey}`;
+        let url = `https://${myBucket}.s3${regionString}.amazonaws.com/${myKey}`;
+        console.log(url)
 
         return ({ url: url, path: myKey });
 
-        // return await new Promise(
-        //     (resolve, reject) => s3.getSignedUrl('getObject', params, function (err, url) {
-        //         if (err) {
-        //             // console.log('Error getting presigned url from AWS S3');
-        //             reject({success: false, message: 'Pre-Signed URL erro', urls: url});
-        //         } else {
-        //             // console.log('Presigned URL: ', url);
-        //
-        //         }
-        //     }));
     } catch (err) {
         return err;
     }
@@ -131,4 +129,3 @@ exports.getFileAsStream = async(data) => {
         return err;
     }
 };
-

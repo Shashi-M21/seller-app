@@ -3,11 +3,12 @@ import ProductController from '../controllers/product.controller';
 import apiParamsValidator from '../v1/middleware/api.params.validator';
 import productSchema from '../v1/validationSchema/api-params-validation-schema/product.validate.schema';
 import express from 'express';
-import {authentication, authorisation} from '../../../lib/middlewares';
-import {SYSTEM_ROLE} from '../../../lib/utils/constants';
+import {authentication, authorisation} from "../../../lib/middlewares";
+import {SYSTEM_ROLE} from "../../../lib/utils/constants";
 const router = express.Router();
-const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
+const multer = require("multer");
+
+const upload = multer({ dest: 'uploads/bulkproductimages' })
 
 const productController = new ProductController();
 
@@ -22,12 +23,6 @@ router.put('/v1/products/:productId',
     authorisation.middleware({roles: [SYSTEM_ROLE.ORG_ADMN]}),
     apiParamsValidator.middleware({ schema: productSchema.update() }),
     productController.update);
-
-router.put('/v1/products/:productId/publish',
-    authentication.middleware(),
-    authorisation.middleware({roles: [SYSTEM_ROLE.ORG_ADMN]}),
-    apiParamsValidator.middleware({ schema: productSchema.publish() }),
-    productController.publish);
 
 router.get('/v1/products',
     authentication.middleware(),
@@ -53,13 +48,20 @@ router.get('/v1/products/:productId/ondcGet',
 
 router.post('/v1/products/upload/bulk',
     authentication.middleware(),
-    upload.single('xlsx'),
+    upload.single("xlsx"),
     productController.uploadCatalog,
 );
 
+
 router.get('/v1/products/upload/bulk/template',
-    //authentication.middleware(),
+    authentication.middleware(),
     productController.uploadTemplate,
 );
+
+router.put('/v1/products/:productId/publish',
+    authentication.middleware(),
+    authorisation.middleware({roles: [SYSTEM_ROLE.ORG_ADMN]}),
+    apiParamsValidator.middleware({ schema: productSchema.update() }),
+    productController.publish);
 
 module.exports = router;

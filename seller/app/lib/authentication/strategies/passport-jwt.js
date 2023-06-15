@@ -7,6 +7,7 @@ import MESSAGES from '../../utils/messages';
 import { HEADERS } from '../../utils/constants';
 import {mergedEnvironmentConfig} from '../../../config/env.config';
 const JwtStrategy = passportJWT.Strategy;
+const jwttokenkey = 'wftd3hg5$g67h*fd5h6fbvcy6rtg5wftd3hg5$g67h*fd5xxx'
 
 const tokenExtractor = function (req) {
     let token = null;
@@ -24,13 +25,13 @@ const tokenExtractor = function (req) {
         tokenArray = token.split(' ');
     }
 
-    console.log('token--------->',tokenArray);
+    console.log("token--------->",tokenArray);
     return tokenArray[1];
 };
 
 const opts = {
     jwtFromRequest: tokenExtractor, //ExtractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKey: mergedEnvironmentConfig.jwtSecret,
+    secretOrKey: mergedEnvironmentConfig.jwtSecret || jwttokenkey,
     passReqToCallback: true,
 };
 
@@ -40,19 +41,9 @@ const passportJwtStrategy = new JwtStrategy(
         try {
             let user = {};
 
-
             // if jwt payload contains user obj then its an inter service communication call
             if (jwtPayload.user) {
                 user = jwtPayload.user;
-                user.userToken = tokenExtractor(req);
-                let cachedToken = myCache.get(`${user.id}-${user.userToken}`);
-
-                if(!cachedToken){
-                    throw new UnauthenticatedError(
-                        MESSAGES.LOGIN_ERROR_USER_ACCESS_TOKEN_INVALID
-                    );
-                }
-
             } else if (jwtPayload.userId) {
 
                 if (!user) {
@@ -66,14 +57,6 @@ const passportJwtStrategy = new JwtStrategy(
                 }
 
                 user = user.toJSON();
-                user.userToken = tokenExtractor(req);
-                let cachedToken = myCache.get(`${user.id}-${user.userToken}`);
-
-                if(!cachedToken){
-                    throw new UnauthenticatedError(
-                        MESSAGES.LOGIN_ERROR_USER_ACCESS_TOKEN_INVALID
-                    );
-                }
             }
             return done(null, user);
         } catch (err) {

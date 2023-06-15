@@ -5,6 +5,7 @@ import {mergedEnvironmentConfig} from '../../../config/env.config';
 import axios from 'axios';
 import UserService from '../v1/services/user.service';
 
+
 const authenticationService = new AuthenticationService();
 const userService =new UserService();
 class AuthenticationController {
@@ -113,8 +114,8 @@ class AuthenticationController {
 
             let params = {
                 'grant_type': 'client_credentials',
-                'client_id': mergedEnvironmentConfig.mmi.id,
-                'client_secret': mergedEnvironmentConfig.mmi.secret            };
+                'client_id': '33OkryzDZsKzD5GIs4bcuPZIqUMuvrB3s9zokSgCsD-VsoWPEGx2jqihSlA-gDrNGo8ESy_ek82dOZW6ewt-Yg==',
+                'client_secret': 'lrFxI-iSEg8Hex49YDw_y_xdz4RAKb4x0nAzqV1gpmmKlnok83Qvwc5s3a0aSNFbu6PFQAdNYM0GtzVUzUxImqGMNMUuN1ey'           };
 
             var paramsData  = new URLSearchParams();
             paramsData.append('grant_type', params.grant_type);
@@ -158,7 +159,7 @@ class AuthenticationController {
             });
     }
 
-    grantAccess(req, res) {
+    grantAccess(req, res,next) {
         let {id:userId} = req.params;
         userService.grantAccess(userId).then((token) => {
             res.json({});

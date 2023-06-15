@@ -20,71 +20,49 @@ class HttpRequest {
         this.data = data;
         this.headers = headers;
         this.options = options;
-    }
+    };
 
     /**
      * Send http request to server to write data to / read data from server
      * axios library provides promise implementation to send request to server
      * Here we are using axios library for requesting a resource
      */
-    async send() 
-    {
-        try 
-        {
-
-
-
-            // console.log(`sending request to ${this.baseUrl}/${this.url}`)
-            // console.log(`sending headers `,headers)
-
-            let result;
-            if (this.method.toLowerCase() == 'get') {
-                let headers = {...this.headers};
-                result = await axios({
-                    baseURL: this.baseUrl,
-                    url: this.url,
-                    method: this.method,
-                    headers: headers,
-                    timeout: 180000, // If the request takes longer than `timeout`, the request will be aborted.
-                });
-            } else {
+    send() {
+        return new Promise(async (resolve, reject) => {
+            try {
                 let headers = {...this.headers, 'Content-Type': 'application/json'};
-                // Make server request using axios
-                result = await axios({
-                    baseURL: this.baseUrl,
-                    url: this.url,
-                    method: this.method,
-                    headers: headers,
-                    timeout: 180000, // If the request takes longer than `timeout`, the request will be aborted.
-                    data: JSON.stringify(this.data)
-                });
 
+                console.log("send email iam--------------------")
+                let result;
+                if (this.method.toLowerCase() == 'get') {
+
+                    result = await axios({
+                        baseURL: this.baseUrl,
+                        url: this.url,
+                        method: this.method,
+                        headers: headers,
+                        timeout: 180000, // If the request takes longer than `timeout`, the request will be aborted.
+                    });
+                } else {
+                    // Make server request using axios
+                    result = await axios({
+                        url: this.baseUrl+this.url,
+                        method: this.method,
+                        timeout: 180000, // If the request takes longer than `timeout`, the request will be aborted.
+                        headers: headers,
+                        data: this.data
+                    });
+
+                }
+
+                resolve(result);
+            } catch (err) {
+
+                console.log('err',err);
+                reject(err);
             }
-
-
-            return result;
-        } 
-        catch (err) 
-        {
-            console.log('err-------->',err);
-
-            if (err.response) {
-                // The client was given an error response (5xx, 4xx)
-                console.log('Error response',err,'\n', err.response);
-            } else if (err.request) {
-                // The client never received a response, and the request was never left
-                console.log('Error request',err,'\n', err.request);
-            } else {
-                // Anything else
-                console.log('Error message',err,'\n', err.message);
-            }
-
-            // console.log('Error err', err);
-
-            throw err;
-        }
-       
-    }
+        });
+    };
 }
 
 export default HttpRequest;

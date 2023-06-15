@@ -13,7 +13,7 @@ class UserController {
     async create(req, res, next) {
         try {
 
-            console.log('user data------------------',req.body);
+            console.log("user data------------------",req.body);
             const data = req.body;
             const user = await userService.create(data);
             return res.send(user);
@@ -27,7 +27,7 @@ class UserController {
     async invite(req, res, next) {
         try {
 
-            console.log('user data------------------',req.body);
+            console.log("user data------------------",req.body);
             const data = req.body;
             const user = await userService.invite(data);
             return res.send(user);
@@ -66,7 +66,7 @@ class UserController {
         try {
             const currentUser=req.user;
 
-            console.log('currentUser-------------->',currentUser);
+            console.log("currentUser-------------->",currentUser);
             const user = await userService.get(req.params.userId,currentUser);
             return res.send(user);
         
@@ -75,6 +75,7 @@ class UserController {
             next(error);
         }
     }
+
 
     /**
    * Get list of all users
@@ -109,18 +110,6 @@ class UserController {
         }
     }
 
-    async enable(req, res, next) {
-        try {
-            const data = req.body;
-            const user = await userService.enable(req.params.userId,data);
-            return res.send(user);
-
-        } catch (error) {
-            console.log('[userController] [getUsers] Error -', error);
-            next(error);
-        }
-    }
-
     async upload(req, res, next) {
         try {
             const currentUser=req.user;
@@ -132,6 +121,18 @@ class UserController {
             res.json(result);
         } catch (e) {
             next(e);
+        }
+    }
+
+    async enable(req, res, next) {
+        try {
+            const data = req.body;
+            const user = await userService.enable(req.params.userId,data);
+            return res.send(user);
+
+        } catch (error) {
+            console.log('[userController] [getUsers] Error -', error);
+            next(error);
         }
     }
 }
