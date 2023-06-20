@@ -43,6 +43,15 @@ router.post('/confirm',
 router.get('/order',
     productController.orderList);
 
+router.post('/cancel',
+    productController.cancel);
+
+router.post('/status',
+    productController.status);
+
+
+
+    
 
 
 export default router;

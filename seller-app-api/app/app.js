@@ -15,7 +15,7 @@ import Mailer from './lib/mailer/index.js';
 import db from './models/index.js'
 import ondcRoutes from './routes/ondc.routes.js';
 import productRoutes from './routes/product.routes.js';
-// import logisticRoutes from './routes/logistic.routes.js';
+import logisticRoutes from './routes/logistic.routes.js';
 import categoryRoutes from './routes/category.routes.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -86,7 +86,7 @@ app.use((err, req, res, next) => {
     app.use('/api', cors(corsOptions), ondcRoutes);
     app.use('/api', cors(corsOptions), categoryRoutes);
     app.use('/api', cors(corsOptions), productRoutes);
-    // app.use('/api', cors(corsOptions), logisticRoutes);
+    app.use('/api', cors(corsOptions), logisticRoutes);
     const routeDetails = getRoutes(app);
     console.log('Registered API paths are: \n', routeDetails);
 
@@ -100,7 +100,9 @@ app.use((err, req, res, next) => {
     /**
      * Let Sequelize synchronize the database
      */
-    await db.sequelize.sync();
+    await db.sequelize.sync().then(
+      console.log('sucess')
+    );
 
     // Bootstrap();
   } catch (expressStartupError) {

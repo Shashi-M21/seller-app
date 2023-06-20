@@ -59,7 +59,7 @@ class ProductController {
         // const currentUserAccessToken = res.get('currentUserAccessToken');
         //  req.params
         productService.confirm( req.body).then(data => {
-            res.json(data);
+         res.json(data);
         }).catch((err) => {
             next(err);
         });
@@ -99,6 +99,25 @@ class ProductController {
         let data =req.body
         // const currentUserAccessToken = res.get('currentUserAccessToken');
         productService.create(data).then(data => {
+            res.json(data);
+        }).catch((err) => {
+            next(err);
+        });
+    }
+
+    cancel(req, res, next) {
+        let data =req.body
+        // const currentUserAccessToken = res.get('currentUserAccessToken');
+        productService.productCancel(data).then(data => {
+            res.json(data);
+        }).catch((err) => {
+            next(err);
+        });
+    }
+
+    status(req, res, next) {
+        // const currentUserAccessToken = res.get('currentUserAccessToken');
+        productService.OrderdetailStatus(req.body,req).then(data => {
             res.json(data);
         }).catch((err) => {
             next(err);
