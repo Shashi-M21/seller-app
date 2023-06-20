@@ -1,4 +1,5 @@
-import {UnauthorisedError} from "../errors";
+
+import UnauthorisedError from "../errors/unauthorised.error.js";
 
 class Authorisation {
     /**

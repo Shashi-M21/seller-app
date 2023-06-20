@@ -11,6 +11,8 @@ mongoose.connect(`mongodb+srv://shashi:hAeVch1QroPJ8J9B@cluster0.m4hqvzp.mongodb
     useNewUrlParser: true
 });
 
+mongoose.set('strictQuery', false);
+
 mongoose.set('debug', (collectionName, method, query, doc) => {
     console.log(`[MONGOOS]:${collectionName}.${method}`, JSON.stringify(query), doc);
 });

@@ -1,4 +1,5 @@
-import {ProductService} from '../services';
+
+import ProductService from '../services/product.service.js';
 
 const productService = new ProductService();
 
@@ -25,6 +26,9 @@ class ProductController {
     search(req, res, next) {
         // const currentUserAccessToken = res.get('currentUserAccessToken');
         //  req.params
+        
+        console.log(req.body);
+// Orignial is with req.body
         productService.search( req.body).then(data => {
             res.json(data);
         }).catch((err) => {
@@ -55,7 +59,7 @@ class ProductController {
         // const currentUserAccessToken = res.get('currentUserAccessToken');
         //  req.params
         productService.confirm( req.body).then(data => {
-            res.json(data);
+         res.json(data);
         }).catch((err) => {
             next(err);
         });
@@ -101,6 +105,25 @@ class ProductController {
         });
     }
 
+    cancel(req, res, next) {
+        let data =req.body
+        // const currentUserAccessToken = res.get('currentUserAccessToken');
+        productService.productCancel(data).then(data => {
+            res.json(data);
+        }).catch((err) => {
+            next(err);
+        });
+    }
+
+    status(req, res, next) {
+        // const currentUserAccessToken = res.get('currentUserAccessToken');
+        productService.OrderdetailStatus(req.body,req).then(data => {
+            res.json(data);
+        }).catch((err) => {
+            next(err);
+        });
+    }
+
 }
 
-module.exports = ProductController;
+export default ProductController;

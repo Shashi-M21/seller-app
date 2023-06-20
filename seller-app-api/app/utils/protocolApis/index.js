@@ -295,9 +295,6 @@ const onUpdateStatus = async (messageId) => {
 };
 
 /**
-<<<<<<< HEAD
- * on select order
-=======
  * quote order
  * @param {Object} data 
  * @returns 
@@ -320,7 +317,6 @@ const protocolSelect = async (data) => {
 
 /**
  * on quote order
->>>>>>> 4ca1e5244701ec9d181f924c64d8a79d21f70ec6
  * @param {String} messageId 
  */
 const onOrderSelect = async (messageId) => {

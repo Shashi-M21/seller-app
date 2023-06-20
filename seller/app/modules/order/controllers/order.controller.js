@@ -6,6 +6,7 @@ class OrderController {
     async create(req, res, next) {
         try {
             const data = req.body;
+           
             //data.organization = req.user.organization
             const product = await orderService.create(data);
             return res.send(product);

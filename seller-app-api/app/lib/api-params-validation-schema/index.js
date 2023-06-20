@@ -1,14 +1,14 @@
-import authSchema from './authentication.validation.schema';
-import userSchema from './user.validation.schema';
-import labSchema from './lab.validation.schema';
-import processSchema from './process.validation.schema';
-import localTestMethodCodeSchema from './localTestMethodCode.validation.schema';
-import testMethodCodeSchema from './testMethodCode.validation.schema';
-import methodDescriptorSchema from './methodDescriptor.validation.schema';
-import unitSchema from './unit.validation.schema';
-import controlLotSchema from './controlLot.validation.schema';
-import localAttributeSchema from './localAttribute.validation.schema';
-import productSchema from './product.validation.schema';
+import authSchema from './authentication.validation.schema.js';
+import userSchema from './user.validation.schema.js';
+import labSchema from './lab.validation.schema.js';
+import processSchema from './process.validation.schema.js';
+import localTestMethodCodeSchema from './localTestMethodCode.validation.schema.js';
+import testMethodCodeSchema from './testMethodCode.validation.schema.js';
+import methodDescriptorSchema from './methodDescriptor.validation.schema.js';
+import unitSchema from './unit.validation.schema.js';
+import controlLotSchema from './controlLot.validation.schema.js';
+import localAttributeSchema from './localAttribute.validation.schema.js';
+import productSchema from './product.validation.schema.js';
 
 
 exports.authSchema = authSchema;

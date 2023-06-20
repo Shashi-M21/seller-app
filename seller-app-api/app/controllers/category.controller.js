@@ -1,4 +1,4 @@
-import {CategoryService} from '../services';
+import CategoryService from "../services/category.service.js";
 
 const categoryService = new CategoryService();
 
@@ -32,7 +32,7 @@ class CategoryController {
         });
     }
     create(req, res, next) {
-        let data =req.body
+        let data = req.body
         // const currentUserAccessToken = res.get('currentUserAccessToken');
         categoryService.create(data).then(data => {
             res.json(data);
@@ -43,4 +43,4 @@ class CategoryController {
 
 }
 
-module.exports = CategoryController;
+export default CategoryController;

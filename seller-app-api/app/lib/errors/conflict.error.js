@@ -1,4 +1,5 @@
-import ERRORS from './errors';
+import ERRORS from './errors.js';
+
 
 class ConflictError extends Error {
     constructor(message = ERRORS.CONFLICT_ERROR.message, params) {

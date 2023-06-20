@@ -1,5 +1,8 @@
-module.exports = (sequelize, DataTypes) => {
-    const ConfirmRequest = sequelize.define('ConfirmRequest', {
+
+import  DataTypes  from "sequelize";
+
+const ConfirmRequest =(sequelize) =>{
+    const model= sequelize.define('ConfirmRequest', {
         id: {
             type: DataTypes.UUID,
             primaryKey: true,
@@ -40,7 +43,8 @@ module.exports = (sequelize, DataTypes) => {
     }, {
         freezeTableName: true
     });
+return model;
+}
 
 
-    return ConfirmRequest;
-};
+export default ConfirmRequest;

@@ -1,12 +1,15 @@
-import HttpRequest from '../utils/HttpRequest';
-import {getProducts,getUpdate, getSelect, getInit, getConfirm, getTrack, getSupport,getStatus,getCancel} from "../utils/schemaMapping";
-import {ConfirmRequest, InitRequest, SelectRequest} from "../models";
-import logger from "../lib/logger";
+import HttpRequest from '../utils/HttpRequest.js';
+import {getProducts,getUpdate, getSelect, getInit, getConfirm, getTrack, getSupport,getStatus,getCancel} from "../utils/schemaMapping.js";
+import ConfirmRequest from '../models/ConfirmRequest.js';
+import SelectRequest from '../models/SelectRequest.js';
+import InitRequest from '../models/InitRequest.js'
+import logger from "../lib/logger/index.js";
 
-var config = require('../lib/config');
+import config from "../lib/config/index.js";
 const serverUrl = config.get("seller").serverUrl
 const BPP_ID = config.get("sellerConfig").BPP_ID
 const BPP_URI = config.get("sellerConfig").BPP_URI
+const apiUrl = config.get("express").apiUrl
 
 class ProductService {
 
@@ -33,7 +36,10 @@ class ProductService {
 
             //get search criteria
             const searchProduct = requestQuery.message.intent.item?.descriptor?.name??""
-            const searchCategory = requestQuery.message.intent.category?.descriptor?.id??""
+             const searchCategory = requestQuery.message.intent.category?.descriptor?.id??""
+
+            // const searchProduct = "Biscuit"
+            // const searchCategory = "fashion"
 
             let headers = {};
 
@@ -46,12 +52,20 @@ class ProductService {
 
             let result = await httpRequest.send();
 
-            logger.log('info', `[Product Service] search product : result :`, result.data);
+            requestQuery.context.timestamp = result.timestamp
 
+            // logger.log('info', `[Product Service] search product : result :`, result.data);
+            // logger.log('info', `[Product Service] search product : timestamp :`, result.timestamp);
+          
+            // console.log('requestTimeStamp' + requestQuery.context);
             const productData = await getProducts({data: result.data, context: requestQuery.context});
-
-            logger.log('info', `[Product Service] search product transformed: result :`, productData);
-
+        /* only for testing
+        */ 
+        // const productData = await getProducts({data: result.data, context: result});
+            logger.log('info', `[Product Service] search product transformed: result :`,productData);
+            // logger.log('info', `[Product Service] search product transformed: result context :`,productData.context);    
+            
+            //console.log("log from productdata" + productData);
             return productData
         }catch (e) {
             console.log(e)
@@ -63,32 +77,47 @@ class ProductService {
     async select(requestQuery) {
 
         logger.log('info', `[Product Service] product select :`, requestQuery);
-
+        
         //get search criteria
         const selectData = requestQuery.retail_select
         const items = selectData.message.order.items
-        const logisticData = requestQuery.logistics_on_search
-
+        const logisticData = requestQuery.logistics_on_search ?? ""
+    
         let qouteItems = []
         let detailedQoute = []
         let totalPrice = 0
+        
         for (let item of items) {
             let headers = {};
 
             let qouteItemsDetails = {}
             let httpRequest = new HttpRequest(
-                serverUrl,
-                `/api/products/${item.id}`,
+                apiUrl,
+                `/api/product/${item.id}`,
                 'get',
                 {},
                 headers
             );
 
             let result = await httpRequest.send();
+            
+                
+        
+          /*
+                original 
+          */
+            // if (result?.data?.data.attributes) {
+                
+            //     let price = result?.data?.data?.attributes?.price * item.quantity.count
+            //     totalPrice += price
+            //     item.price = {value: price, currency: "INR"}
+            // }
 
-            if (result?.data?.data.attributes) {
+            //modified
 
-                let price = result?.data?.data?.attributes?.price * item.quantity.count
+            if (result?.data?.MRP) {
+                
+                let price = result?.data?.MRP * item.quantity.count
                 totalPrice += price
                 item.price = {value: price, currency: "INR"}
             }
@@ -100,7 +129,8 @@ class ProductService {
                 "@ondc/org/item_quantity": {
                     "count": item.quantity.count
                 },
-                "title": result?.data?.data?.attributes?.name,
+               // "title": result?.data?.data?.attributes?.name,
+               "title": result?.data?.productName,
                 "@ondc/org/title_type": "item",
                 "price": item.price
             }
@@ -111,21 +141,48 @@ class ProductService {
 
         logger.log('info', `[Product Service] checking if logistics provider available from :`, logisticData);
 
-        let logisticProvider = {}
-        for (let logisticData1 of logisticData) { //check if any logistics available who is serviceable
+        // let logisticProvider = {}
+        // for (let logisticData1 of logisticData) { //check if any logistics available who is serviceable
 
-            if (logisticData1.message) {
-                logisticProvider = logisticData1
-            }
-        }
+        //     if (logisticData1.message) {
+        //         logisticProvider = logisticData1
+        //     }
+        // }
 
-        if (Object.keys(logisticProvider).length === 0  ) {
-            return {context: {...selectData.context,action:'on_select'},message:{
-                "type": "CORE-ERROR",
-                "code": "60001",
-                "message": "Pickup not servicable"
-            }}
-        }
+        // if (Object.keys(logisticProvider).length === 0  ) {
+        //     return {context: {...selectData.context,action:'on_select'},message:{
+        //         "type": "CORE-ERROR",
+        //         "code": "60001",
+        //         "message": "Pickup not servicable"
+        //     }}
+        // }
+
+        const logisticProvider = {
+          message: {
+            catalog: {
+              "bpp/descriptor": "ShipRocket",
+              "bpp/providers": [
+                {
+                  items: [
+                    {
+                      price: {
+                        currency: "INR",
+                        value: 12.0,
+                      },
+                    },
+                  ],
+                  category_id: "fashion",
+                  descriptor: {
+                    name: "",
+                  },
+                },
+              ],
+            },
+          },
+          context: {
+            bpp_id: "987678",
+          },
+        };
 
         logger.log('info', `[Product Service] logistics provider available  :`, logisticProvider);
 
@@ -174,6 +231,7 @@ class ProductService {
             context: selectData.context
         });
 
+       // console.log('productData --->'+ productData)
         return productData
     }
 
@@ -190,18 +248,29 @@ class ProductService {
 
             let qouteItemsDetails = {}
             let httpRequest = new HttpRequest(
-                serverUrl,
-                `/api/products/${item.id}`,
+                apiUrl,
+                `/api/product/${item.id}`,
                 'get',
                 {},
                 headers
             );
 
             let result = await httpRequest.send();
+        /*
+                original 
+          */
+            // if (result?.data?.data.attributes) {
+                
+            //     let price = result?.data?.data?.attributes?.price * item.quantity.count
+            //     totalPrice += price
+            //     item.price = {value: price, currency: "INR"}
+            // }
 
-            if (result?.data?.data.attributes) {
+            //modified
 
-                let price = result?.data?.data?.attributes?.price * item.quantity.count
+            if (result?.data?.MRP) {
+                
+                let price = result?.data?.MRP * item.quantity.count
                 totalPrice += price
                 item.price = {value: price, currency: "INR"}
             }
@@ -211,7 +280,8 @@ class ProductService {
                 "@ondc/org/item_quantity": {
                     "count": item.quantity.count
                 },
-                "title": result?.data?.data?.attributes?.name,
+               // "title": result?.data?.data?.attributes?.name,
+               "title": result?.data?.productName,
                 "@ondc/org/title_type": "item",
                 "price": item.price
             }
@@ -258,8 +328,8 @@ class ProductService {
 
             let qouteItemsDetails = {}
             let httpRequest = new HttpRequest(
-                serverUrl,
-                `/api/products/${item.id}`,
+                apiUrl,
+                `/api/product/${item.id}`,
                 'get',
                 {},
                 headers
@@ -267,9 +337,21 @@ class ProductService {
 
             let result = await httpRequest.send();
 
-            if (result?.data?.data.attributes) {
+    /*
+                original 
+          */
+            // if (result?.data?.data.attributes) {
+                
+            //     let price = result?.data?.data?.attributes?.price * item.quantity.count
+            //     totalPrice += price
+            //     item.price = {value: price, currency: "INR"}
+            // }
 
-                let price = result?.data?.data?.attributes?.price * item.quantity.count
+            //modified
+
+            if (result?.data?.MRP) {
+                
+                let price = result?.data?.MRP * item.quantity.count
                 totalPrice += price
                 item.price = {value: price, currency: "INR"}
             }
@@ -279,9 +361,10 @@ class ProductService {
                 "@ondc/org/item_quantity": {
                     "count": item.quantity.count
                 },
-                "title": result?.data?.data?.attributes?.name,
+                //"title": result?.data?.data?.attributes?.name,
+                "title": result?.data?.productName,
                 "@ondc/org/title_type": "item",
-                "price": item.price
+                "price": item.MRP
             }
 
             qouteItems.push(item)
@@ -305,16 +388,19 @@ class ProductService {
 
         let confirmData = requestQuery.message.order
 
+
         let orderItems = []
         // let confirmData = requestQuery.message.order
         for(let item  of confirmData.items){
 
             let productItems = {
-                product:item.id,
+                product_id:item.id,
                 status:'Created',
                 qty:item.quantity.count
-
             }
+
+             /*
+    original code
             let httpRequest = new HttpRequest(
                 serverUrl,
                 `/api/order-items`,
@@ -322,20 +408,24 @@ class ProductService {
                 {data: productItems},
                 headers
             );
-            let result = await httpRequest.send();
-            orderItems.push(result.data.data.id);
+    */
+
+            // let result = await httpRequest.send();
+           // orderItems.push(result.data.data.id);
+           orderItems.push(productItems);
         }
 
-
+       
         confirmData["order_items"] =orderItems
         confirmData.order_id = confirmData.id
         delete confirmData.id
-
+        
 
         let confirm = {}
+
         let httpRequest = new HttpRequest(
             serverUrl,
-            `/api/orders`,
+            `/api/v1/orders`,
             'POST',
             {data: confirmData},
             headers
@@ -359,11 +449,11 @@ class ProductService {
         let headers = {};
         // headers['Authorization'] = `Bearer ${strapiAccessToken}`;
 
-        return 0/3;
+        // return 0/3;
 
         let httpRequest = new HttpRequest(
             serverUrl,
-            `/api/v1/products/${id}`,
+            `/api/v1/products/${id}/ondcGet`,
             'get',
             {},
             headers
@@ -474,7 +564,7 @@ class ProductService {
 
         let httpRequest = new HttpRequest(
             serverUrl,
-            '/api/products',
+            '/api/product',
             'post',
             {data},
             headers
@@ -722,7 +812,7 @@ class ProductService {
 
         let updateOrder = statusRequest.message.order
 
-        updateOrder.state =logisticData.message.order.state //set to inprogress
+        updateOrder.state = logisticData.message.order.state  //set to inprogress
 
         //update order level state
        let httpRequest = new HttpRequest(
@@ -761,14 +851,15 @@ class ProductService {
     }
 
     async productCancel(requestQuery) {
-
-        const cancelRequest = requestQuery.retail_cancel[0]//select first select request
-        const logisticData = requestQuery.logistics_on_cancel[0]
+        console.log('requestQuery---->' + requestQuery)
+        //const cancelRequest = requestQuery.retail_cancel[0]//select first select request
+        //const logisticData = requestQuery.logistics_on_cancel[0]
 
         let confirm = {}
+        console.log('requestQuery---->' + requestQuery)
         let httpRequest = new HttpRequest(
             serverUrl,
-            `/api/v1/orders/${cancelRequest.message.order_id}/ondcGet`,
+            `/api/v1/orders/${requestQuery.message.order_id}/ondcGet`,
             'GET',
             {},
             {}
@@ -778,8 +869,8 @@ class ProductService {
 
         let updateOrder = result.data
 
-        updateOrder.state =logisticData.message.order.state
-        updateOrder.cancellation_reason_id =cancelRequest.message.cancellation_reason_id
+        updateOrder.state =requestQuery.message.order.state ?? 'Cancelled'
+        updateOrder.cancellation_reason_id =requestQuery.message.cancellation_reason_id
 
         //update order level state
         httpRequest = new HttpRequest(
@@ -800,9 +891,9 @@ class ProductService {
         // });
 
         //updateOrder.items = items;
-        updateOrder.id = cancelRequest.message.order_id;
+        updateOrder.id = requestQuery.message.order_id;
         const productData = await getCancel({
-            context: cancelRequest.context,
+            context: requestQuery.context,
             updateOrder:updateOrder
         });
 
@@ -1152,7 +1243,7 @@ class ProductService {
 
         try{
 
-            let savedLogistics = new SelectRequest();
+           // let savedLogistics = new SelectRequest();
 
             const selectData = JSON.parse(JSON.stringify(requestQuery.retail_select[0]));//select first select request
 
@@ -1168,20 +1259,9 @@ class ProductService {
 
             let logisticProvider = {}
 
-
-            const org = await this.getOrgForOndc(selectData.message.order.provider.id);
-            let logisticsToSelect = config.get("sellerConfig").LOGISTICS_BAP_ID
-
-            if(org.providerDetail.storeDetails.logisticsBppId){
-                logisticsToSelect = org.providerDetail.storeDetails.logisticsBppId
-            }
-
-            console.log({logisticsToSelect});
-            console.log(org.providerDetail.storeDetails);
-
             for (let logisticData1 of logisticData) {
                 if (logisticData1.message) {
-                    if (logisticData1.context.bpp_id === logisticsToSelect) {//TODO: move to env
+                    if (logisticData1.context.bpp_id === config.get("sellerConfig").LOGISTICS_BAP_ID) {//TODO: move to env
                         if(logisticData1.message){
                             logisticProvider = logisticData1
                         }
@@ -1326,6 +1406,7 @@ class ProductService {
 
                 //get org name from provider id
 
+               const org = await this.getOrgForOndc(selectData.message.order.provider.id);
                 deliveryCharges = {
                     "title": "Delivery charges",
                     "@ondc/org/title_type": "delivery",
@@ -1371,13 +1452,22 @@ class ProductService {
                 isServiceable
             });
 
-            savedLogistics.transactionId = selectData.context.transaction_id;
-            savedLogistics.logisticsTransactionId = logisticProvider?.context?.transaction_id;
-            savedLogistics.packaging = "default"//TODO: select packaging option;
-            savedLogistics.providerId = selectData.message.order.provider.id;
-            savedLogistics.selectedLogistics = logisticProvider;
-            savedLogistics.selectRequest = requestQuery.retail_select[0];
-            savedLogistics.onSelectResponse = productData;
+            let savedLogistics = new SelectRequest({
+               transactionId : selectData.context.transaction_id,
+               logisticsTransactionId : logisticProvider?.context?.transaction_id,
+               packaging : "default",//TODO: select packaging option;
+                providerId : selectData.message.order.provider.id,
+               selectedLogistics : logisticProvider,
+               selectRequest : requestQuery.retail_select[0],
+                onSelectResponse : productData,
+            });
+            // savedLogistics.transactionId = selectData.context.transaction_id;
+            // savedLogistics.logisticsTransactionId = logisticProvider?.context?.transaction_id;
+            // savedLogistics.packaging = "default"//TODO: select packaging option;
+            // savedLogistics.providerId = selectData.message.order.provider.id;
+            // savedLogistics.selectedLogistics = logisticProvider;
+            // savedLogistics.selectRequest = requestQuery.retail_select[0];
+            // savedLogistics.onSelectResponse = productData;
 
             await savedLogistics.save();
 
@@ -1388,6 +1478,42 @@ class ProductService {
         }
        }
 
+    async OrderdetailStatus(requestQuery){
+       
+
+        let httpRequest = new HttpRequest(
+            serverUrl,
+            `/api/v1/orders/${requestQuery.message.order_id}/ondcGet`,
+            'GET',
+            {},
+            {}
+        );
+
+        let result = await httpRequest.send();
+        let updateOrder = result.data
+        
+        updateOrder.id = requestQuery.message.order_id
+       
+            //update item level fulfillment status
+            let items = updateOrder.items.map((item)=>{
+                if(item.state=='Cancelled'){
+                    item.tags={status:'Cancelled'};
+                }
+               // item.tags={status:logisticData.message.order.fulfillments[0].state?.descriptor?.code};
+               // item.fulfillment_id = logisticData.message.order.fulfillments[0].id
+                delete item.state
+                return item;
+            });
+
+            updateOrder.items = items;
+            const productData = await getStatus({
+                context: requestQuery.context,
+                updateOrder:updateOrder
+            });
+    
+            return productData
+
+    } 
 }
 
-module.exports = ProductService;
+export default ProductService;

@@ -1,4 +1,4 @@
-import {Authorisation} from '../lib/authorisation';
+import Authorisation from '../lib/authorisation/authorisation.js';
 
 exports.middleware = (options) => (req, res, next) => {
     const httpRequestMethod = req.method.toUpperCase();
@@ -13,3 +13,4 @@ exports.middleware = (options) => (req, res, next) => {
     });
 };
 
+export default Authorisation

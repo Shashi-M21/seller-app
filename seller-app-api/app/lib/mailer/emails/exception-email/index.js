@@ -1,6 +1,6 @@
-import Email from '../../email';
+import Email from '../../email.js';
 import path from 'path';
-import config from '../../../config';
+import config from '../../../config/index.js';
 
 class ExceptionEmail extends Email {
     /**
@@ -29,4 +29,4 @@ class ExceptionEmail extends Email {
     }
 }
 
-module.exports = ExceptionEmail;
+export default ExceptionEmail;

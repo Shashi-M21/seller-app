@@ -1,11 +1,15 @@
-import {v4 as uuidv4} from 'uuid';
-import config from "../lib/config";
-import HttpRequest from "../utils/HttpRequest";
-import {InitRequest, ConfirmRequest, SelectRequest} from '../models'
+// import { v4 as uuidv4 } from 'uuid';
+import pkg from 'uuid';
+const { v4: uuidv4 } = pkg;
+import config from "../lib/config/index.js";
+import HttpRequest from "../utils/HttpRequest.js";
+import ConfirmRequest from '../models/ConfirmRequest.js';
+import InitRequest from '../models/InitRequest.js';
+import SelectRequest from '../models/SelectRequest.js';
 
-import ProductService from './product.service'
+import ProductService from './product.service.js'
 const productService = new ProductService();
-import logger from '../lib/logger'
+import logger from '../lib/logger/index.js'
 class OndcService {
 
     async productSearch(payload = {}, req = {}) {

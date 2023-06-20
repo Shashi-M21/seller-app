@@ -1,4 +1,4 @@
-import config from "../lib/config";
+import config from "../lib/config/index.js";
 
 exports.middleware = (options) => (req, res, next) => {
 
@@ -29,3 +29,5 @@ exports.middleware = (options) => (req, res, next) => {
     }
 
 };
+
+export default appVersionValidator

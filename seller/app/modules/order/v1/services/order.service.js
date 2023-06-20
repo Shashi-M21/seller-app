@@ -14,14 +14,14 @@ class OrderService {
             let query = {};
 
             console.log('data----->',data);
-            console.log('data---items-->',data.items);
+            // console.log('data---items-->',data.data.items);
             // const organizationExist = await Product.findOne({productName:data.productName});
             // if (organizationExist) {
             //     throw new DuplicateRecordFoundError(MESSAGES.PRODUCT_ALREADY_EXISTS);
             // }
             // update item qty in product inventory
 
-            for(let item of data.items){
+            for(let item of data.data.items){
                 if(item.quantity.count){
                     //reduce item quantity
                     let product = await Product.findOne({_id:item.id});
@@ -32,8 +32,26 @@ class OrderService {
                     await product.save();
                 }
             }
-            data.organization=data.provider;
-            let order = new Order(data.data);
+
+            let orderdata = data.data
+
+            const orderdatas = new Order({
+                billing: orderdata.billing,
+                items: orderdata.items,
+                transactionId:orderdata.payment.params.transaction_id,
+                quote: orderdata.quote,
+                fulfillments: orderdata.fulfillments,
+                payment: orderdata.payment,
+                state: orderdata.state,
+                orderId:orderdata. order_id,
+                cancellation_reason_id: '',
+                organization: orderdata.provider.id
+            })
+
+            console.log('order--->' + orderdatas)
+            // console.log('data-provider'+ data.provider)
+            //data.organization=data.data.provider.id;
+            let order = new Order(orderdatas);
             let savedOrder= await order.save();
 
             return savedOrder;
@@ -42,6 +60,7 @@ class OrderService {
             throw err;
         }
     }
+  
 
     async listReturnRequests(params){
         try {
@@ -76,10 +95,11 @@ class OrderService {
         try {
             let query={};
             if(params.organization){
-                query.organization =params.organization;
+                query.organization = params.organization;
             }
             const data = await Order.find(query).populate([{path:'organization',select:['name','_id','storeDetails']}]).sort({createdAt:-1}).skip(params.offset*params.limit).limit(params.limit).lean();
 
+            console.log('orders from provider-->' + data)
             for(const order of data ){
 
                 console.log('ordre----->',order);
@@ -302,7 +322,7 @@ class OrderService {
 
     async OndcUpdate(orderId,data) {
         try {
-
+                console.log('data---->' + data.data.state)
             let oldOrder = await Order.findOne({orderId:orderId}).lean();
 
             console.log('oldOrder--->',orderId,oldOrder);
@@ -313,7 +333,9 @@ class OrderService {
                     //reduce item quantity
                     let product = await Product.findOne({_id:item.id});
                     product.quantity = product.quantity+item.quantity.count;
-                    await product.save();
+                    await product.save().then(
+                        console.log('product saved')
+                    );
                 }
             }
 
@@ -340,7 +362,7 @@ class OrderService {
                     //     throw new ConflictError();
                     // }
                     // await product.save();
-
+                    // console.log('return_inititated')
                     //step 1. add item to return model
                     let returnData = {
                         itemId: item.id,

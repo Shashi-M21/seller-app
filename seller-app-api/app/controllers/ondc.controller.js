@@ -1,4 +1,4 @@
-import {OndcService} from '../services';
+import OndcService from "../services/ondc.service.js";
 
 const ondcService = new OndcService();
 
@@ -107,5 +107,4 @@ class OndcController {
 
 
 }
-
-module.exports = OndcController;
+export default OndcController;

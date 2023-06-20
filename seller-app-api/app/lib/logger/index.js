@@ -1,4 +1,8 @@
 import winston from 'winston';
+import { fileURLToPath } from 'url';
+import path  from 'path';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const {combine, timestamp, colorize, align, prettyPrint, printf, json} = winston.format;
 
@@ -31,4 +35,4 @@ if (process.env.NODE_ENV === 'production') {
     logger.add(new winston.transports.File({filename: __dirname + '/actions.log'}))
 }
 
-module.exports = logger;
+export default logger;

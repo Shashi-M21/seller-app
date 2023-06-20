@@ -1,5 +1,8 @@
-module.exports = (sequelize, DataTypes) => {
-    const SelectRequest = sequelize.define('SelectRequest', {
+import  DataTypes  from "sequelize";
+
+
+const SelectRequest =(sequelize) =>{
+    const model = sequelize.define('SelectRequest', {
         id: {
             type: DataTypes.UUID,
             primaryKey: true,
@@ -33,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
     }, {
         freezeTableName: true
     });
-
-
-    return SelectRequest;
+    return model;
 };
+  
+export default SelectRequest;

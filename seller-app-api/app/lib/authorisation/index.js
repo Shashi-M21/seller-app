@@ -1,3 +1,3 @@
-import Authorisation from './authorisation';
+import Authorisation from './authorisation.js';
 
 exports.Authorisation = Authorisation;

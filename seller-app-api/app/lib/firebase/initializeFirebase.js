@@ -1,12 +1,12 @@
 import admin from 'firebase-admin';
-var config = require('../config');
+import config from '../config/index.js'
 /**
  * initialize firebase 
  */
-const initializeFirebase = () => {
-    admin.initializeApp({
-        credential: admin.credential.cert(config.get("firebase").account)
-    });
-}
+// const initializeFirebase = () => {
+//     admin.initializeApp({
+//         credential: admin.credential.cert(config.get("firebase").account)
+//     });
+// }
 
-export default initializeFirebase;
+// export default initializeFirebase;

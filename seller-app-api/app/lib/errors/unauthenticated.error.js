@@ -1,4 +1,4 @@
-import ERRORS from './errors';
+import ERRORS from './errors.js';
 
 class UnauthenticatedError extends Error {
     constructor(message = ERRORS.UNAUTHENTICATED_ERROR.message, params) {
